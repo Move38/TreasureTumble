@@ -1,9 +1,17 @@
-//TREASURE TUMBLE
-//Game code by Jacob Surovsky
-//Gravity code by Josh Levine
-
-//Website: jacobsurovsky.com
-//Instagram: @coolthingsbyjacob
+/*
+ *  Treasure Tumble
+ *  by Jacob Surovsky 2020
+ *  Lead development by Jacob Surovsky
+ *  Additional development by Josh Levine
+ *
+ *  --------------------
+ *  Blinks by Move38
+ *  Brought to life via Kickstarter 2018
+ *
+ *  @madewithblinks
+ *  www.move38.com
+ *  --------------------
+ */
 
 const byte NO_PARENT_FACE = FACE_COUNT ;   // Signals that we do not currently have a parent
 
