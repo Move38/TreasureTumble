@@ -1,17 +1,17 @@
 /*
- *  Treasure Tumble
- *  by Jacob Surovsky 2020
- *  Lead development by Jacob Surovsky
- *  Additional development by Josh Levine
- *
- *  --------------------
- *  Blinks by Move38
- *  Brought to life via Kickstarter 2018
- *
- *  @madewithblinks
- *  www.move38.com
- *  --------------------
- */
+    Treasure Tumble
+    by Jacob Surovsky 2020
+    Lead development by Jacob Surovsky
+    Additional development by Josh Levine
+
+    --------------------
+    Blinks by Move38
+    Brought to life via Kickstarter 2018
+
+    @madewithblinks
+    www.move38.com
+    --------------------
+*/
 
 const byte NO_PARENT_FACE = FACE_COUNT ;   // Signals that we do not currently have a parent
 
@@ -139,17 +139,17 @@ void wallLoop() {
 
   countNeighbors(); //counts how many neighbors each blink has and stores that information
 
-//  bool amDeathtrap;
+  //  bool amDeathtrap;
 
-//  if (buttonDoubleClicked()) {
-//    amDeathtrap = !amDeathtrap;
-//  }
-//
-//  if (amDeathtrap == true) {
-//    deathtrapLoop();
-//  } else if (amDeathtrap == false) {
-    setWallRole(); //figures out what role to assign the blink based off of the neighbors counted
-//  }
+  //  if (buttonDoubleClicked()) {
+  //    amDeathtrap = !amDeathtrap;
+  //  }
+  //
+  //  if (amDeathtrap == true) {
+  //    deathtrapLoop();
+  //  } else if (amDeathtrap == false) {
+  setWallRole(); //figures out what role to assign the blink based off of the neighbors counted
+  //  }
   gravityLoop(); //sets gravity and stuff
 
   FOREACH_FACE(f) {
