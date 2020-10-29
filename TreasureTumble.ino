@@ -2,7 +2,10 @@
     Treasure Tumble
     by Jacob Surovsky 2020
     Lead development by Jacob Surovsky
-    Additional development by Josh Levine
+    @coolthingsbyjacob
+    www.jacobsurovsky.com
+    Additional development by Daniel King
+    Gravity development by Josh Levine
 
     --------------------
     Blinks by Move38
@@ -12,6 +15,7 @@
     www.move38.com
     --------------------
 */
+
 
 const byte NO_PARENT_FACE = FACE_COUNT ;   // Signals that we do not currently have a parent
 
@@ -33,9 +37,8 @@ const int LOCKOUT_TIMER_MS = 250;               // This should be long enough fo
 #define FEATURE_COLOR makeColorHSB(25, 255, 240) //very red orange
 #define TREASURE_COLOR makeColorHSB(90, 225, 255) //an emerald green
 #define BG_COLOR makeColorHSB(50, 200, 255) //a temple tan ideally
-//#define CRUMBLE_COLOR makeColorHSB(30, 255, 100)
 
-bool amGod = false;
+bool amGod = false; //it's important to stay humble while writing code
 byte gravitySignal[6] = {IR_IDLE_VALUE, IR_IDLE_VALUE, IR_IDLE_VALUE, IR_IDLE_VALUE, IR_IDLE_VALUE, IR_IDLE_VALUE};
 
 enum spawnerSignals {IM_SPAWNER, NOT_SPAWNER};
@@ -78,9 +81,6 @@ bool dropTreasure;
 bool autoDrop;
 Timer autoDropTimer;
 
-Timer crumbleTimer;
-#define CRUMBLE_TIME 6000
-
 byte treasureFace;
 bool isTreasureOnMyBlink;
 byte stepCounter;
@@ -92,7 +92,7 @@ Timer treasureTimer;
 #define TREASURE_TIME 150
 
 void setup() {
-  randomize();
+  randomize(); //we want our numbers to be RANDOM random, not just random
 }
 
 void loop() {
@@ -105,7 +105,7 @@ void loop() {
   topRightFace = (bottomFace + 4) % 6;
   rightFace = (bottomFace + 5) % 6;
 
-  //send data
+  //send data (see safely sending signals pt 2 on the forum for way more info on how this works!)
   FOREACH_FACE(f) {
     byte sendData = (treasureSignal[f] << 4) | (spawnerSignal[f] << 3) | (gravitySignal[f]);
     setValueSentOnFace(sendData, f);
@@ -113,17 +113,17 @@ void loop() {
 }
 
 void wallLoop() {
-  if (bChangeRole) {
+  if (bChangeRole) { //if someone were to long press me, I'd like to turn into a bucket
     blinkRole = BUCKET;
     bChangeRole = false;
   }
 
   amGod = false;
 
+  //set the "background" color here
   setColor(dim(BG_COLOR, 190));
   setColorOnFace(dim(BG_COLOR, 140), topLeftFace);
   setColorOnFace(dim(BG_COLOR, 140), topRightFace);
-
 
   FOREACH_FACE(f) {
     spawnerSignal[f] = NOT_SPAWNER;
@@ -142,18 +142,7 @@ void wallLoop() {
   }
 
   countNeighbors(); //counts how many neighbors each blink has and stores that information
-
-  //  bool amDeathtrap;
-
-  //  if (buttonDoubleClicked()) {
-  //    amDeathtrap = !amDeathtrap;
-  //  }
-  //
-  //  if (amDeathtrap == true) {
-  //    deathtrapLoop();
-  //  } else if (amDeathtrap == false) {
   setWallRole(); //figures out what role to assign the blink based off of the neighbors counted
-  //  }
   gravityLoop(); //sets gravity and stuff
 
   FOREACH_FACE(f) {
@@ -253,6 +242,8 @@ void bucketLoop() {
     treasureCount = 0;
   }
 
+//every 5 treasure you count, add another treasure to the bottom please
+
   if (treasureCount > 0) {
     setColorOnFace(TREASURE_COLOR, bottomFace);
     if (treasureCount > 5) {
@@ -344,7 +335,7 @@ void spawnerLoop() {
       treasureSignal[bottomFace] = SENDING; //send out a treasure every 2 seconds
       autoDropTimer.set(2000);
     }
-  } else if (autoDrop == false) { //if we're not auto dropping, all of this complicated listening/not listening logic
+  } else if (autoDrop == false) { //if we're not auto dropping, then we need all of this complicated listening/not listening logic
     treasureSignal[bottomFace] = BLANK;
     //setting treasure animation
     if (treasurePrimed == true) {
@@ -404,16 +395,14 @@ void treasurePrimedAnimation() {
   setColorOnFace(TREASURE_COLOR, shimmerFace);
 }
 
-void gravityLoop() {
+void gravityLoop() { //Josh wrote most of this code and it's essentially magic so I'm leaving it here pretty much untouched
 
-  if (amGod) {
+  if (amGod) { //basically the God Blink is the one between the two buckets that gets to declare the orientation of gravity for all the other Blinks
 
     // I am the center blink!
 
     FOREACH_FACE(f) {
-
       gravitySignal[f] = (f + 6 - bottomFace) % 6; //eveything is being broadcast relative to the bottomFace
-
     }
 
     parent_face = NO_PARENT_FACE;
@@ -423,7 +412,7 @@ void gravityLoop() {
 
   } else {
 
-    // I am not the center blink!
+    // I am not the center blink! (aka not God)
 
     if (parent_face == NO_PARENT_FACE ) {   // If we have no parent, then look for one
 
@@ -536,6 +525,11 @@ void setWallRole() { //this is where we auto-assign what wall role to be
     setColorOnFace(dim(BG_COLOR, 140), topRightFace);
 
   }
+
+/*
+ * This is where all the roles auto-assign depending on both how many neighbors a blink has, and where they are positioned
+ * Depending on whick of these conditions is satisfied as true, we call that appropriate display loop.
+ */
 
   else if (neighborFaces[bottomFace] == false) { //no one directly beneath me
     if (neighborFaces[leftFace] == true && neighborFaces[rightFace] == false) { //but one neighbor to the left
@@ -773,7 +767,7 @@ void switcherLoop() {
 }
 
 
-void treasureTumble() {
+void treasureTumble() { //roll credits!
 
   if (isTreasureOnMyBlink == true) {
     if (treasureTimer.isExpired()) {
@@ -847,7 +841,7 @@ void setRole() {
   }
 }
 
-byte getGravitySignal(byte data) { //all the gravity communication happens here
+byte getGravitySignal(byte data) { 
   return (data & 7); //returns bits D, E, and F
 }
 
@@ -856,5 +850,5 @@ byte getSpawnerSignal(byte data) {
 }
 
 byte getTreasureSignal(byte data) {
-  return ((data >> 4) & 3); //returns bits A and B?
+  return ((data >> 4) & 3); //returns bits A and B
 }
